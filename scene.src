@@ -1,0 +1,100 @@
+// machin-demo-3d — a real-time 3D scene rendered natively from machin (MFL)
+// through raylib's C FFI: a camera orbits a ring of bobbing colored cubes on a
+// grid, with a pulsing cube at the center. No textures, no engine — just the
+// language driving OpenGL.
+//
+//   ./build.sh && ./machin-demo-3d
+//
+// This is the *3D* dogfood for machin's FFI. 3D is gated on a by-value struct of
+// by-value structs: raylib's `Camera3D` holds three `Vector3`s. machin couldn't
+// express that until **nested cstructs** (v0.45.0) — a cstruct field whose type
+// is another cstruct, marshaled recursively across the boundary. The orbit math
+// rides on libm via `extern "m"` (sin/cos), which flags the next gap: machin has
+// no native math builtins yet — the natural driver for a procedural-animation app.
+
+extern "raylib" {
+    header "raylib.h"
+    link "raylib" link "GL" link "m" link "pthread" link "dl" link "rt" link "X11"
+    cstruct Color { r u8 g u8 b u8 a u8 }
+    cstruct Vector3 { x f32 y f32 z f32 }
+    cstruct Camera3D { position Vector3 target Vector3 up Vector3 fovy f32 projection i32 }
+    fn InitWindow(i32, i32, string)
+    fn SetTargetFPS(i32)
+    fn WindowShouldClose() bool
+    fn BeginDrawing()
+    fn EndDrawing()
+    fn ClearBackground(Color)
+    fn BeginMode3D(Camera3D)
+    fn EndMode3D()
+    fn DrawCube(Vector3, f32, f32, f32, Color)
+    fn DrawCubeWires(Vector3, f32, f32, f32, Color)
+    fn DrawGrid(i32, f32)
+    fn DrawText(string, i32, i32, i32, Color)
+    fn CloseWindow()
+}
+
+extern "m" { header "math.h" link "m" fn sin(float) float fn cos(float) float }
+
+func TAU() (n) { n = 6.2831853 }
+func RING() (n) { n = 6 }            // cubes in the ring
+func RADIUS() (n) { n = 5.0 }        // ring radius
+
+func col(r, g, b) (c) { c = Color{r, g, b, 255} }
+func v3(x, y, z) (v) { v = Vector3{x, y, z} }
+
+// a distinct hue per ring cube
+func cube_color(k) (c) {
+    c = col(230, 80, 80)
+    if k == 1 { c = col(240, 170, 60) }
+    if k == 2 { c = col(240, 220, 70) }
+    if k == 3 { c = col(90, 200, 110) }
+    if k == 4 { c = col(80, 150, 240) }
+    if k == 5 { c = col(170, 110, 230) }
+}
+
+func main() {
+    InitWindow(800, 600, "machin - 3d demo")
+    SetTargetFPS(60)
+
+    a := 0.0
+    while WindowShouldClose() == false {
+        a = a + 0.012
+
+        // the camera orbits the scene, looking at a point just above the origin
+        cam := Camera3D{
+            v3(12.0 * cos(a), 7.0, 12.0 * sin(a)),
+            v3(0.0, 1.5, 0.0),
+            v3(0.0, 1.0, 0.0),
+            45.0, 0}
+
+        BeginDrawing()
+        ClearBackground(col(232, 236, 244))
+        BeginMode3D(cam)
+        DrawGrid(20, 1.0)
+
+        // a ring of cubes, each bobbing on its own phase
+        k := 0
+        while k < RING() {
+            ba := float(k) * (TAU() / float(RING()))
+            cx := RADIUS() * cos(ba)
+            cz := RADIUS() * sin(ba)
+            cy := 1.0 + 0.6 * sin(a * 2.0 + ba)
+            DrawCube(v3(cx, cy, cz), 1.4, 1.4, 1.4, cube_color(k))
+            DrawCubeWires(v3(cx, cy, cz), 1.4, 1.4, 1.4, col(35, 35, 45))
+            k = k + 1
+        }
+
+        // a pulsing cube at the center
+        ch := 2.2 + 0.5 * sin(a * 3.0)
+        DrawCube(v3(0.0, ch, 0.0), 2.0, 2.0, 2.0, col(245, 215, 90))
+        DrawCubeWires(v3(0.0, ch, 0.0), 2.0, 2.0, 2.0, col(35, 35, 45))
+
+        EndMode3D()
+
+        DrawText("machin 3D - native OpenGL via the C FFI", 20, 20, 24, col(40, 40, 55))
+        DrawText("orbiting camera, nested Camera3D struct", 20, 50, 18, col(90, 90, 110))
+        EndDrawing()
+    }
+
+    CloseWindow()
+}
