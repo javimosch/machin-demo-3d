@@ -35,15 +35,11 @@ fn DrawGrid(i32, f32)      fn DrawSphere(Vector3, f32, Color)
 - machin marshals the whole thing recursively across the FFI; a small `v3(x,y,z)` helper returning `Vector3` keeps call sites readable.
 - `BeginMode3D(cam)` … 3D draws … `EndMode3D()`; then any 2D `DrawText` is screen-space.
 
-## Math: reach libm
+## Math: native builtins
 
-machin has **no native `sin`/`cos`/`sqrt`** yet, so the orbit uses libm through a second extern block:
+The orbit uses machin's **native math** (v0.46.0): `sin`, `cos`, and `pi()` (`TAU() { n = 2.0 * pi() }`). The full libm suite is built in — `sin cos tan asin acos atan atan2 sqrt cbrt pow exp log log2 log10 floor ceil round trunc abs fmod hypot` and `pi()` — numeric in, `float` out, with `-lm` linked only when used.
 
-```
-extern "m" { header "math.h" link "m" fn sin(float) float fn cos(float) float }
-```
-
-`sin`/`cos` here are C `double sin(double)` (machin `float` is `double`), so the signatures line up exactly. Multiple `extern` blocks are fine. (This is the gap a future procedural-animation app would drive into the language as native builtins.)
+This demo originally reached libm via `extern "m" { header "math.h" link "m" fn sin(float) float ... }` — that workaround is exactly what drove native math into the language. The extern form still works (and an `extern` of the same name shadows the builtin), but you no longer need it.
 
 ## Patterns worth copying
 

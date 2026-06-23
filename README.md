@@ -29,7 +29,7 @@ cam := Camera3D{Vector3{12.0, 7.0, 0.0}, Vector3{0.0, 1.5, 0.0}, Vector3{0.0, 1.
 BeginMode3D(cam)        // a nested struct, constructed and passed by value
 ```
 
-The orbit math (`sin`/`cos`) rides on **libm** via `extern "m"` — which flags the *next* gap: machin has no native math builtins yet. That's the natural driver for a procedural-animation app.
+The orbit math uses machin's **native `sin`/`cos`/`pi`** (**v0.46.0**) — which this demo's earlier `extern "m"` workaround drove into the language, completing the loop.
 
 ## Build
 

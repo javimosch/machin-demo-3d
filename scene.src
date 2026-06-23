@@ -9,8 +9,8 @@
 // by-value structs: raylib's `Camera3D` holds three `Vector3`s. machin couldn't
 // express that until **nested cstructs** (v0.45.0) — a cstruct field whose type
 // is another cstruct, marshaled recursively across the boundary. The orbit math
-// rides on libm via `extern "m"` (sin/cos), which flags the next gap: machin has
-// no native math builtins yet — the natural driver for a procedural-animation app.
+// uses machin's **native `sin`/`cos`** (v0.46.0) — which this demo's earlier
+// `extern "m"` workaround drove into the language.
 
 extern "raylib" {
     header "raylib.h"
@@ -33,9 +33,7 @@ extern "raylib" {
     fn CloseWindow()
 }
 
-extern "m" { header "math.h" link "m" fn sin(float) float fn cos(float) float }
-
-func TAU() (n) { n = 6.2831853 }
+func TAU() (n) { n = 2.0 * pi() }
 func RING() (n) { n = 6 }            // cubes in the ring
 func RADIUS() (n) { n = 5.0 }        // ring radius
 
