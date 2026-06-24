@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build machin-demo-3d. Uses a system raylib if one is installed; otherwise
+# Build machin-game-demo-3d. Uses a system raylib if one is installed; otherwise
 # fetches raylib's prebuilt *static* release into vendor/ (no root needed) and
 # links that. The committed source stays system-style; the vendored path is
 # injected into a throwaway copy so scene.src is never rewritten.
@@ -35,5 +35,5 @@ else
     mv "$tmp" scene.mfl
 fi
 
-"$MACHIN" build scene.mfl -o machin-demo-3d
-echo "built ./machin-demo-3d"
+"$MACHIN" build scene.mfl -o machin-game-demo-3d
+echo "built ./machin-game-demo-3d"

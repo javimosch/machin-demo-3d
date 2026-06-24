@@ -1,4 +1,4 @@
-# machin-demo-3d
+# machin-game-demo-3d
 
 A real-time **3D scene** rendered natively from **[machin](https://github.com/javimosch/machin)** (MFL) through raylib's C FFI — a camera **orbits** a ring of bobbing colored cubes on a grid, with a pulsing cube at the center. No textures, no engine: just the language driving OpenGL.
 
@@ -16,7 +16,7 @@ Part of [**awesome-machin**](https://github.com/javimosch/awesome-machin) — th
 
 ## Why it exists
 
-The machin north star is "build real things, let usage drive features." This is the **3D** dogfood — the leap past the 2D games ([snake](https://github.com/javimosch/machin-game-snake) / [2048](https://github.com/javimosch/machin-game-2048) / [flappy](https://github.com/javimosch/machin-game-flappy) / [simon](https://github.com/javimosch/machin-game-simon)).
+The machin north star is "build real things, let usage drive features." This is the **3D** dogfood — the leap past the 2D games ([snake](https://github.com/javimosch/machin-game-demo-snake) / [2048](https://github.com/javimosch/machin-game-demo-2048) / [flappy](https://github.com/javimosch/machin-game-demo-flappy) / [simon](https://github.com/javimosch/machin-game-demo-simon)).
 
 3D is gated on a **by-value struct of by-value structs**: raylib's `Camera3D` holds three `Vector3`s. machin couldn't express that — `cstruct` fields had to be numeric scalars — so it drove **nested cstructs** into the language (**machin v0.45.0**):
 
@@ -36,8 +36,8 @@ The orbit math uses machin's **native `sin`/`cos`/`pi`** (**v0.46.0**) — which
 Needs the `machin` compiler (**v0.45.0+**), a C compiler, **raylib**, and a display (X11/desktop). A GUI binary links the system graphics stack, so it is **not** a no-dependency binary.
 
 ```bash
-./build.sh            # → ./machin-demo-3d
-./machin-demo-3d
+./build.sh            # → ./machin-game-demo-3d
+./machin-game-demo-3d
 ```
 
 `build.sh` uses a **system raylib** if installed (`sudo apt-get install libraylib-dev`, `brew install raylib`, …); otherwise it **vendors raylib's prebuilt static release** into `vendor/` automatically — no root required.

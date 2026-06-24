@@ -1,9 +1,9 @@
-// machin-demo-3d — a real-time 3D scene rendered natively from machin (MFL)
+// machin-game-demo-3d — a real-time 3D scene rendered natively from machin (MFL)
 // through raylib's C FFI: a camera orbits a ring of bobbing colored cubes on a
 // grid, with a pulsing cube at the center. No textures, no engine — just the
 // language driving OpenGL.
 //
-//   ./build.sh && ./machin-demo-3d
+//   ./build.sh && ./machin-game-demo-3d
 //
 // This is the *3D* dogfood for machin's FFI. 3D is gated on a by-value struct of
 // by-value structs: raylib's `Camera3D` holds three `Vector3`s. machin couldn't

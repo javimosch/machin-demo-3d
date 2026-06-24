@@ -1,19 +1,19 @@
 ---
-name: machin-demo-3d
-description: Build, run, and modify machin-demo-3d — a real-time 3D scene (orbiting camera, cubes, grid) rendered from machin (MFL) via raylib's C FFI. Use when working on this repo, or as the worked example of 3D in machin — nested cstructs (Camera3D/Vector3), BeginMode3D, and reaching libm for trig.
+name: machin-game-demo-3d
+description: Build, run, and modify machin-game-demo-3d — a real-time 3D scene (orbiting camera, cubes, grid) rendered from machin (MFL) via raylib's C FFI. Use when working on this repo, or as the worked example of 3D in machin — nested cstructs (Camera3D/Vector3), BeginMode3D, and reaching libm for trig.
 ---
 
-# machin-demo-3d
+# machin-game-demo-3d
 
-A real-time 3D scene rendered natively from [machin](https://github.com/javimosch/machin) (MFL) through raylib. It is the reference example for **3D** in machin (the 2D/audio siblings are [flappy](https://github.com/javimosch/machin-game-flappy) / [simon](https://github.com/javimosch/machin-game-simon)).
+A real-time 3D scene rendered natively from [machin](https://github.com/javimosch/machin) (MFL) through raylib. It is the reference example for **3D** in machin (the 2D/audio siblings are [flappy](https://github.com/javimosch/machin-game-demo-flappy) / [simon](https://github.com/javimosch/machin-game-demo-simon)).
 
 > Shared game-dev setup, build-and-verify workflow, and cross-cutting gotchas live in the canonical **[machin-gamedev skill](https://github.com/javimosch/machin/blob/main/skills/machin-gamedev/SKILL.md)**. This file is the 3D specifics.
 
 ## Build & run
 
 ```bash
-./build.sh                 # machin encode scene.src -> scene.mfl, then machin build -> ./machin-demo-3d
-./machin-demo-3d
+./build.sh                 # machin encode scene.src -> scene.mfl, then machin build -> ./machin-game-demo-3d
+./machin-game-demo-3d
 ```
 
 Needs `machin` **v0.45.0+** (nested cstructs), a C compiler, **raylib**, and a display. `build.sh` prefers a system raylib, else vendors the prebuilt static release into `vendor/` (no root).
