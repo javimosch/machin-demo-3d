@@ -51,5 +51,5 @@ This demo originally reached libm via `extern "m" { header "math.h" link "m" fn 
 
 - **Scene:** `RING` (cube count), `RADIUS`, the `12.0`/`7.0` camera distance/height, the `0.012` orbit speed, the bob amplitudes/phases.
 - **Shapes:** swap `DrawCube` for `DrawSphere`, add `DrawCubeWires` outlines, more grid slices.
-- **Rotation of individual cubes** needs a matrix push/rotate (raylib `rlPushMatrix`/`rlRotatef`) — more FFI surface; this demo animates position/height only.
+- **Per-object rotation** uses raylib's immediate-mode matrix stack (rlgl). Those functions live in `rlgl.h`, not `raylib.h`, but their symbols are in `libraylib.a`, so a **headerless** extern block is enough (machin emits the prototypes; no new machin feature): `extern "rlgl" { fn rlPushMatrix() fn rlPopMatrix() fn rlTranslatef(f32,f32,f32) fn rlRotatef(f32,f32,f32,f32) }`. Then `spin_cube` does push → translate to world pos → rotate (degrees) around its axes → draw at the local origin → pop. The same stack scales (`rlScalef`) and works in 2D between `BeginDrawing`/`EndDrawing`.
 - After any edit to `scene.src`, re-run `./build.sh` (never hand-edit `scene.mfl` — it is generated).

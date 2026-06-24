@@ -45,7 +45,8 @@ Needs the `machin` compiler (**v0.45.0+**), a C compiler, **raylib**, and a disp
 ## How it works
 
 - **Camera.** Each frame a fresh `Camera3D` is built with the camera position on a circle (`12·cos(a)`, `12·sin(a)`) around the scene, looking at a point just above the origin. `BeginMode3D(cam)` / `EndMode3D()` bracket the 3D draws.
-- **Scene.** `DrawGrid` for the floor; a ring of `RING` cubes placed with `cos`/`sin` at radius `RADIUS`, each bobbing on its own sine phase (`DrawCube` + `DrawCubeWires`); a center cube pulsing in height.
+- **Scene.** `DrawGrid` for the floor; a ring of `RING` cubes placed with `cos`/`sin` at radius `RADIUS`, each bobbing on its own sine phase **and spinning in place**; a center cube pulsing and tumbling.
+- **Per-object rotation.** raylib's immediate-mode matrix stack (rlgl: `rlPushMatrix`/`rlTranslatef`/`rlRotatef`/`rlPopMatrix`) — those live in `rlgl.h`, but the symbols are in `libraylib.a`, so a **headerless** `extern "rlgl"` block (machin emits the prototypes) is enough. No new machin feature; the existing scalar FFI carries it.
 - **2D overlay.** After `EndMode3D`, plain `DrawText` for the title (screen space).
 - All coordinates are `float`; the trig comes from libm (`extern "m"`).
 

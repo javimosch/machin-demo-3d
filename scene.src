@@ -33,12 +33,35 @@ extern "raylib" {
     fn CloseWindow()
 }
 
+// raylib's immediate-mode matrix stack (rlgl) gives per-object transforms.
+// It lives in rlgl.h, not raylib.h, but the symbols are in libraylib.a — so a
+// HEADERLESS extern block (machin emits the prototypes itself) is enough; no new
+// machin feature, the existing scalar FFI carries it.
+extern "rlgl" {
+    fn rlPushMatrix()
+    fn rlPopMatrix()
+    fn rlTranslatef(f32, f32, f32)
+    fn rlRotatef(f32, f32, f32, f32)
+}
+
 func TAU() (n) { n = 2.0 * pi() }
 func RING() (n) { n = 6 }            // cubes in the ring
 func RADIUS() (n) { n = 5.0 }        // ring radius
 
 func col(r, g, b) (c) { c = Color{r, g, b, 255} }
 func v3(x, y, z) (v) { v = Vector3{x, y, z} }
+
+// draw a cube spinning in place: push a fresh matrix, translate to its world
+// position, rotate around its own axes (degrees), draw at the local origin, pop.
+func spin_cube(cx, cy, cz, sz, ry, rx, fill) {
+    rlPushMatrix()
+    rlTranslatef(cx, cy, cz)
+    rlRotatef(ry, 0.0, 1.0, 0.0)
+    rlRotatef(rx, 1.0, 0.0, 0.0)
+    DrawCube(v3(0.0, 0.0, 0.0), sz, sz, sz, fill)
+    DrawCubeWires(v3(0.0, 0.0, 0.0), sz, sz, sz, col(35, 35, 45))
+    rlPopMatrix()
+}
 
 // a distinct hue per ring cube
 func cube_color(k) (c) {
@@ -70,27 +93,25 @@ func main() {
         BeginMode3D(cam)
         DrawGrid(20, 1.0)
 
-        // a ring of cubes, each bobbing on its own phase
+        // a ring of cubes, each bobbing on its own phase AND spinning in place
         k := 0
         while k < RING() {
             ba := float(k) * (TAU() / float(RING()))
             cx := RADIUS() * cos(ba)
             cz := RADIUS() * sin(ba)
             cy := 1.0 + 0.6 * sin(a * 2.0 + ba)
-            DrawCube(v3(cx, cy, cz), 1.4, 1.4, 1.4, cube_color(k))
-            DrawCubeWires(v3(cx, cy, cz), 1.4, 1.4, 1.4, col(35, 35, 45))
+            spin_cube(cx, cy, cz, 1.4, a * 90.0, a * 45.0 + float(k) * 30.0, cube_color(k))
             k = k + 1
         }
 
-        // a pulsing cube at the center
+        // a pulsing cube at the center, tumbling on its own axes
         ch := 2.2 + 0.5 * sin(a * 3.0)
-        DrawCube(v3(0.0, ch, 0.0), 2.0, 2.0, 2.0, col(245, 215, 90))
-        DrawCubeWires(v3(0.0, ch, 0.0), 2.0, 2.0, 2.0, col(35, 35, 45))
+        spin_cube(0.0, ch, 0.0, 2.0, a * 60.0, a * 40.0, col(245, 215, 90))
 
         EndMode3D()
 
         DrawText("machin 3D - native OpenGL via the C FFI", 20, 20, 24, col(40, 40, 55))
-        DrawText("orbiting camera, nested Camera3D struct", 20, 50, 18, col(90, 90, 110))
+        DrawText("orbiting camera + per-object rotation (rlgl matrix stack)", 20, 50, 18, col(90, 90, 110))
         EndDrawing()
     }
 
